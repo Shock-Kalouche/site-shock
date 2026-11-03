@@ -18,7 +18,7 @@
   const SCOPE = "identify guilds.members.read";
   // Valeurs par défaut si les réglages sont vides
   const DEFAULT_GUILD = "733070665569140769";
-  const DEFAULT_ROLES = "1313599623004160082, 744164481365573692";   // rôles « CMDM 1010 Fox »
+  const DEFAULT_ROLES = "1313599623004160082";   // rôle(s) « CMDM 1010 Fox » (plusieurs : séparés par une virgule)
   const guildId = () => (SITE_DATA.settings.discordGuildId || DEFAULT_GUILD).trim();
   // Un ou plusieurs rôles (séparés par une virgule) donnent le statut de gérant « CMDM 1010 Fox »
   const roleIds = () => String(SITE_DATA.settings.discordRoleId || DEFAULT_ROLES).split(/[\s,;]+/).filter(Boolean);
@@ -36,6 +36,9 @@
 
   let session = store.get(STORE);
   if (session && session.expires < Date.now()) { store.del(STORE); session = null; }
+  // Seul le jeton est gardé d'une visite à l'autre : le profil et surtout les rôles sont
+  // revérifiés auprès de Discord à chaque chargement de page (un rôle retiré n'est jamais « gardé »).
+  if (session) session.user = null;
 
   // ---------- Retour de Discord : #access_token=…&state=… ----------
   // Lu avant le routeur (script.js) pour que l'adresse ne soit pas prise pour une page.
@@ -53,7 +56,7 @@
           scope: params.get("scope") || "",
           user: null,
         };
-        store.set(STORE, session);
+        store.set(STORE, { ...session, user: null });
       }
     }
     history.replaceState(null, "", location.pathname + location.search + back);
@@ -82,18 +85,17 @@
     document.dispatchEvent(new CustomEvent("auth:change", { detail: null }));
   }
 
-  // Profil Discord et rôles (gardés en mémoire 5 minutes : un rôle retiré est vite pris en compte)
+  // Profil Discord et rôles : redemandés à Discord à chaque chargement de page (et au retour sur l'onglet)
   async function loadUser() {
     if (!session) return;
-    if (session.user && Date.now() - session.user.fetched < 3e5) return;
     try {
       const r = await fetch(`${API}/users/@me`, { headers: { Authorization: `Bearer ${session.token}` } });
       if (r.status === 401) return logout();
       if (!r.ok) return;
       const u = await r.json();
       session.user = { id: u.id, username: u.username, name: u.global_name || u.username, avatar: u.avatar, fetched: Date.now(), ...(await loadMembership()) };
-      store.set(STORE, session);
-    } catch { /* hors ligne : on garde l'ancien profil */ }
+      store.set(STORE, { ...session, user: null });   // le profil / les rôles ne sont pas conservés
+    } catch { /* hors ligne : pas de vérification possible, donc pas de droits */ }
   }
 
   // Membre du serveur de la Shock ? Avec le rôle de gérant ?
@@ -171,5 +173,20 @@
     loading = false;
     render();
     document.dispatchEvent(new CustomEvent("auth:change", { detail: session?.user || null }));
+  });
+
+  // Retour sur l'onglet (au plus une fois par minute) : on revérifie les rôles, au cas où ils auraient changé
+  let lastCheck = Date.now();
+  window.addEventListener("focus", async () => {
+    if (!session || Date.now() - lastCheck < 60000) return;
+    lastCheck = Date.now();
+    const before = session.user ? `${session.user.id}|${session.user.manager}` : "";
+    await loadUser();
+    if (!session) return;
+    const after = session.user ? `${session.user.id}|${session.user.manager}` : "";
+    if (before !== after) {
+      render();
+      document.dispatchEvent(new CustomEvent("auth:change", { detail: session.user || null }));
+    }
   });
 })();
