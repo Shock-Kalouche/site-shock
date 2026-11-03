@@ -1,0 +1,89 @@
+SITE SHOCK TROOPER — GARDE DE CORUSCANT (version locale)
+=========================================================
+
+Ouvrir le site : double-cliquer sur index.html (suffit pour tout, sauf la connexion Discord).
+Avec la connexion Discord : double-cliquer sur lancer-le-site.bat (voir « Connexion Discord »).
+
+Fichiers
+--------
+index.html    Structure de la page (barre du haut, menu, pied de page)
+style.css     Mise en forme du site
+editor.css    Mise en forme de l'éditeur
+script.js     Menu, accueil, affichage des pages, recherche
+editor.js     Éditeur (bouton « ✏️ Modifier le site » en bas de page)
+auth.js       Connexion Discord facultative (rôle de gérant)
+officiers.js  Menu « Gestion » du pied de page + page « Gestion des officiers »
+serveur.py    Mini serveur local utilisé par lancer-le-site.bat
+lancer-le-site.bat  Ouvre le site sur http://localhost:8080/
+site-data.js  Réglages, page d'accueil et menu
+content.js    Contenu de chaque page
+logo.png      Emblème de la Shock Trooper
+
+Modifier le site (accès par Discord uniquement)
+-----------------------------------------------
+Il n'y a plus de code d'accès : tout passe par la connexion Discord.
+- Par défaut, quelqu'un qui se connecte ne peut RIEN modifier.
+- Le CMDM 1010 Fox (l'un des deux rôles) a accès à tout le site.
+- Un officier ajouté dans « Gestion → Gestion des officiers » ne modifie que les pages cochées pour lui.
+1. Ouvre le site avec lancer-le-site.bat et connecte-toi (bouton « Connexion », en haut à droite).
+2. Bas de page, à droite : « ⚙️ Gestion » → « ✏️ Modifier le site ».
+3. Modifie, puis clique sur « Enregistrer » (ou Ctrl+S).
+   - Chrome / Edge : choisis une fois le dossier du site ; site-data.js, content.js
+     et les nouvelles images (dossier uploads/) y sont écrits directement.
+   - Autres navigateurs : les fichiers sont téléchargés ; remplace site-data.js et
+     content.js dans le dossier du site et mets les images dans un dossier « uploads ».
+Rien n'est envoyé sur Internet (hors connexion Discord) : tout reste dans ce dossier.
+
+Si la connexion Discord ne marche plus (ID de l'application effacé ou erroné), plus personne
+ne peut ouvrir l'éditeur : corrige alors à la main, dans site-data.js, la ligne
+"discordClientId" avec l'Application ID de ton application Discord.
+
+Images des pages
+----------------
+content.js appelle 86 images rangées dans deux dossiers : docs/ et pages/.
+Pour les récupérer :
+1. Ouvre telecharger-images.html avec Chrome ou Edge.
+2. Clique sur « Choisir le dossier du site et télécharger » et choisis ce dossier.
+Les images sont copiées depuis ton ancien site (l'adresse est modifiable dans la page).
+Tu peux relancer l'outil : il ne retélécharge pas ce qui est déjà là.
+Une fois les images en place, supprime telecharger-images.html : le site n'en a pas besoin.
+Tant que les images sont absentes, elles sont simplement masquées.
+
+Internet est nécessaire pour : les polices (Google Fonts), les tableaux Google Sheets
+et les vidéos YouTube intégrés dans les pages.
+
+Connexion Discord (gérants)
+---------------------------
+Les membres du serveur Discord qui ont l'un des rôles « CMDM 1010 Fox » (IDs 1313599623004160082
+et 744164481365573692, serveur 733070665569140769) voient une étiquette rouge « 1010 Fox » dans le menu de leur profil et ont
+accès complet à l'éditeur et à « Gestion des officiers ».
+Rien n'est envoyé ailleurs que vers Discord pour la connexion.
+
+Mise en place (une seule fois) :
+1. Va sur https://discord.com/developers/applications → « New Application ».
+2. Onglet OAuth2 → Redirects → ajoute exactement : http://localhost:8080/
+   puis enregistre.
+3. Copie l'« Application ID » (onglet General Information).
+4. Lance lancer-le-site.bat (Python doit être installé : python.org).
+5. Écris l'ID dans site-data.js, sur la ligne "discordClientId": "ton ID"
+   (une fois connecté en gérant, tu peux aussi le changer dans l'éditeur : Réglages > Connexion Discord).
+6. Recharge la page : le bouton « Connexion » apparaît dans la barre du haut.
+
+Limites : le bouton n'apparaît que si le site est ouvert via http://localhost:8080/
+(pas en double-cliquant sur index.html). Le contrôle du rôle est fait dans le
+navigateur : il sert à réserver le bouton aux gérants, ce n'est pas une sécurité
+absolue (le fichier site-data.js reste modifiable par quiconque a accès au dossier).
+
+Gestion des officiers (CMDM 1010 Fox uniquement)
+------------------------------------------------
+« ⚙️ Gestion » (bas de page, à droite) → « 👥 Gestion des officiers ».
+La page n'est ouverte qu'au rôle de gérant (connexion Discord obligatoire).
+- Chaque ligne est un utilisateur Discord (son identifiant), chaque colonne une page.
+- « Ajouter l'officier » : colle son identifiant Discord (Paramètres → Avancés →
+  Mode développeur, puis clic droit sur l'utilisateur → Copier l'identifiant).
+- Coche les pages qu'il a le droit de modifier, puis « Enregistrer » (écrit site-data.js).
+- Un officier connecté avec Discord qui clique sur « Modifier le site » n'a accès
+  qu'aux pages cochées pour lui (pas au menu, ni aux réglages, ni aux autres pages).
+Important : le site est un dossier sur l'ordinateur. Un officier ne peut enregistrer
+que s'il a ce dossier (même PC, ou dossier partagé). Les droits sont contrôlés dans
+le navigateur : ce n'est pas une sécurité absolue.

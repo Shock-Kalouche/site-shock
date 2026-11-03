@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Récupérer les images du site</title>
+<style>
+  :root { --bg:#0d0d0f; --panel:#16161a; --line:#2c2c34; --red:#d7191f; --muted:#a3a3ad; --text:#f4f4f4; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:17px/1.55 "Segoe UI", system-ui, sans-serif; }
+  main { max-width:760px; margin:0 auto; padding:32px 18px 60px; }
+  h1 { font-size:1.5rem; margin:0 0 6px; }
+  p { margin:8px 0; }
+  .muted { color:var(--muted); }
+  .box { background:var(--panel); border:1px solid var(--line); border-top:3px solid var(--red); padding:18px 20px; margin:18px 0; }
+  label { display:block; font-weight:600; margin-bottom:6px; }
+  input { width:100%; padding:9px 12px; font:inherit; color:var(--text); background:var(--bg); border:1px solid var(--line); }
+  button { padding:11px 22px; font:inherit; font-weight:700; color:#fff; background:var(--red); border:0; cursor:pointer; margin-top:14px; }
+  button:disabled { opacity:.5; cursor:default; }
+  .bar { height:10px; background:var(--bg); border:1px solid var(--line); margin-top:14px; }
+  .bar i { display:block; height:100%; width:0; background:var(--red); transition:width .15s; }
+  #log { font-size:15px; max-height:260px; overflow:auto; margin-top:12px; color:var(--muted); }
+  #log .ko { color:#ff6b70; }
+  .warn { border-left:4px solid var(--red); padding:8px 14px; background:var(--panel); }
+  code { background:var(--bg); padding:1px 6px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Récupérer les images du site</h1>
+  <p class="muted">Outil à usage unique : il copie les images des pages (dossiers <code>docs/</code> et <code>pages/</code>) depuis ton ancien site vers le dossier du site sur ton ordinateur. Tu peux supprimer ce fichier ensuite : le site n'en a pas besoin.</p>
+
+  <div class="box">
+    <label for="base">Adresse de l'ancien site (là où les images sont en ligne)</label>
+    <input id="base" value="https://lucasmasure.github.io/65th-cosmos/" spellcheck="false">
+    <p class="muted" id="count">Recherche des images…</p>
+    <button id="go" disabled>Choisir le dossier du site et télécharger</button>
+    <p class="muted" style="font-size:14px">Choisis le dossier qui contient <code>index.html</code>. Les images déjà présentes ne sont pas retéléchargées.</p>
+    <div class="bar" hidden id="barwrap"><i id="bar"></i></div>
+    <p id="status"></p>
+    <div id="log"></div>
+  </div>
+  <p class="warn" id="nofs" hidden>Ce navigateur ne peut pas écrire dans un dossier. Ouvre cette page avec <strong>Chrome</strong> ou <strong>Edge</strong>.</p>
+</main>
+
+<script src="content.js"></script>
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  // Chemins d'images utilisés par les pages (docs/… et pages/…)
+  const paths = [...new Set((JSON.stringify(CONTENT).match(/(?:docs|pages)\/[A-Za-z0-9_.\/-]+?\.(?:png|jpe?g|gif|webp)/gi) || []))].sort();
+  $("#count").textContent = `${paths.length} images utilisées par les pages.`;
+  const canWrite = typeof window.showDirectoryPicker === "function";
+  $("#nofs").hidden = canWrite;
+  $("#go").disabled = !canWrite || !paths.length;
+
+  const log = (msg, bad) => { const d = document.createElement("div"); if (bad) d.className = "ko"; d.textContent = msg; $("#log").appendChild(d); $("#log").scrollTop = 1e9; };
+  const exists = async (root, path) => {
+    try { let d = root; const parts = path.split("/"); const name = parts.pop(); for (const p of parts) d = await d.getDirectoryHandle(p); await d.getFileHandle(name); return true; }
+    catch { return false; }
+  };
+  async function save(root, path, blob) {
+    let d = root; const parts = path.split("/"); const name = parts.pop();
+    for (const p of parts) d = await d.getDirectoryHandle(p, { create: true });
+    const w = await (await d.getFileHandle(name, { create: true })).createWritable();
+    await w.write(blob); await w.close();
+  }
+
+  $("#go").addEventListener("click", async () => {
+    let root;
+    try { root = await window.showDirectoryPicker({ id: "site-shock", mode: "readwrite" }); } catch { return; }
+    let hasIndex = true;
+    try { await root.getFileHandle("index.html"); } catch { hasIndex = false; }
+    if (!hasIndex && !confirm(`Le dossier « ${root.name} » ne contient pas index.html. Continuer quand même ?`)) return;
+
+    const base = $("#base").value.trim().replace(/\/?$/, "/");
+    $("#go").disabled = true; $("#barwrap").hidden = false; $("#log").innerHTML = "";
+    let done = 0, ok = 0, skipped = 0; const failed = [];
+    const tick = () => { $("#bar").style.width = (done / paths.length * 100) + "%"; $("#status").textContent = `${done} / ${paths.length} — ${ok} téléchargées, ${skipped} déjà présentes, ${failed.length} échecs`; };
+    tick();
+
+    const queue = [...paths];
+    const worker = async () => {
+      while (queue.length) {
+        const path = queue.shift();
+        try {
+          if (await exists(root, path)) { skipped++; }
+          else {
+            const r = await fetch(base + path.split("/").map(encodeURIComponent).join("/"), { cache: "no-store" });
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            await save(root, path, await r.blob());
+            ok++;
+          }
+        } catch (e) { failed.push(path); log(`✖ ${path} (${e.message})`, true); }
+        done++; tick();
+      }
+    };
+    await Promise.all([worker(), worker(), worker(), worker()]);
+
+    if (!failed.length) { $("#status").textContent = `✅ Terminé : ${ok} images téléchargées, ${skipped} déjà présentes. Ouvre index.html.`; }
+    else if (ok === 0 && skipped === 0) {
+      $("#status").textContent = "❌ Aucune image récupérée.";
+      log("Vérifie l'adresse ci-dessus et ta connexion Internet. Si l'ancien site est hors ligne, les images doivent venir d'une autre source.", true);
+    } else { $("#status").textContent = `⚠️ Terminé avec ${failed.length} échec(s) : ${ok} téléchargées, ${skipped} déjà présentes. Relance l'outil pour réessayer les manquantes.`; }
+    $("#go").disabled = false;
+  });
+})();
+</script>
+</body>
+</html>

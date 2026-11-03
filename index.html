@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#d7191f">
+  <title>Shock Trooper | Garde de Coruscant</title>
+  <link rel="icon" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="editor.css">
+</head>
+<body>
+  <!-- Barre du haut -->
+  <header class="topbar">
+    <button class="burger" id="burger" aria-label="Ouvrir le menu">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="#accueil" class="brand">
+      <img src="logo.png" alt="Logo Shock Trooper">
+      <span id="brand-name"></span>
+    </a>
+    <div class="search">
+      <input type="search" id="search" placeholder="Rechercher une page…" autocomplete="off">
+      <ul class="search-results" id="search-results"></ul>
+    </div>
+    <!-- Connexion Discord (facultative), remplie par auth.js -->
+    <div class="auth" id="auth"></div>
+  </header>
+
+  <!-- Menu latéral -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="logo.png" alt="">
+      <div>
+        <strong id="sidebar-title"></strong>
+        <small id="sidebar-subtitle"></small>
+      </div>
+    </div>
+    <nav id="nav"></nav>
+  </aside>
+  <div class="overlay" id="overlay"></div>
+
+  <main id="app"></main>
+
+  <footer class="footer">
+    <div class="footer-stripe"></div>
+    <div class="footer-inner">
+      <img src="logo.png" alt="">
+      <p id="footer-text"></p>
+      <p class="credit" id="footer-credit"></p>
+      <!-- Menu « Gestion » : géré par officiers.js (menu) et editor.js (modification du site) -->
+      <div class="manage" id="manage">
+        <button class="edit-link" id="manage-toggle" type="button" aria-haspopup="true" aria-expanded="false">⚙️ Gestion ▾</button>
+        <div class="manage-menu" id="manage-menu" hidden>
+          <button type="button" id="edit-open">✏️ Modifier le site</button>
+          <button type="button" id="officers-open">👥 Gestion des officiers</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="site-data.js"></script>
+  <script src="content.js"></script>
+  <script src="auth.js"></script>
+  <script src="officiers.js"></script>
+  <script src="script.js"></script>
+  <script src="editor.js"></script>
+</body>
+</html>
