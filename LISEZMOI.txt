@@ -23,7 +23,7 @@ Modifier le site (accès par Discord uniquement)
 -----------------------------------------------
 Il n'y a plus de code d'accès : tout passe par la connexion Discord.
 - Par défaut, quelqu'un qui se connecte ne peut RIEN modifier.
-- Le CMDM 1010 Fox (l'un des deux rôles) a accès à tout le site.
+- Le CMDM 1010 Fox (rôle 1313599623004160082) a accès à tout le site.
 - Un officier ajouté dans « Gestion → Gestion des officiers » ne modifie que les pages cochées pour lui.
 1. Ouvre le site avec lancer-le-site.bat et connecte-toi (bouton « Connexion », en haut à droite).
 2. Bas de page, à droite : « ⚙️ Gestion » → « ✏️ Modifier le site ».
@@ -54,8 +54,8 @@ et les vidéos YouTube intégrés dans les pages.
 
 Connexion Discord (gérants)
 ---------------------------
-Les membres du serveur Discord qui ont l'un des rôles « CMDM 1010 Fox » (IDs 1313599623004160082
-et 744164481365573692, serveur 733070665569140769) voient une étiquette rouge « 1010 Fox » dans le menu de leur profil et ont
+Les membres du serveur Discord qui ont le rôle « CMDM 1010 Fox » (ID 1313599623004160082,
+serveur 733070665569140769) voient une étiquette rouge « 1010 Fox » dans le menu de leur profil et ont
 accès complet à l'éditeur et à « Gestion des officiers ».
 Rien n'est envoyé ailleurs que vers Discord pour la connexion.
 
