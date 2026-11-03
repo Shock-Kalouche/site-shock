@@ -18,7 +18,7 @@
   const SCOPE = "identify guilds.members.read";
   // Valeurs par défaut si les réglages sont vides
   const DEFAULT_GUILD = "733070665569140769";
-  const DEFAULT_ROLES = "1313599623004160082, 744164481365573692";   // rôles « CMDM 1010 Fox »
+  const DEFAULT_ROLES = "1313599623004160082";   // rôles « CMDM 1010 Fox »
   const guildId = () => (SITE_DATA.settings.discordGuildId || DEFAULT_GUILD).trim();
   // Un ou plusieurs rôles (séparés par une virgule) donnent le statut de gérant « CMDM 1010 Fox »
   const roleIds = () => String(SITE_DATA.settings.discordRoleId || DEFAULT_ROLES).split(/[\s,;]+/).filter(Boolean);
