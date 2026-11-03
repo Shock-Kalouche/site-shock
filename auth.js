@@ -28,7 +28,10 @@
     set(k, v, s = localStorage) { try { s.setItem(k, JSON.stringify(v)); } catch {} },
     del(k, s = localStorage) { try { s.removeItem(k); } catch {} },
   };
-  const clientId = () => (SITE_DATA.settings.discordClientId || "").trim();
+  // ID de l'application Discord (public, pas un secret). Valeur de secours si le réglage est vide :
+  // le bouton « Connexion » ne disparaît plus si site-data.js est remplacé par une ancienne copie.
+  const DEFAULT_CLIENT_ID = "1566877067717513336";
+  const clientId = () => (SITE_DATA.settings.discordClientId || DEFAULT_CLIENT_ID).trim();
   const canLogin = () => /^https?:$/.test(location.protocol);
   // Adresse de retour : la page du site sans le #… (à déclarer telle quelle dans Discord)
   // (« …/index.html » et « …/ » sont ramenés à la même adresse : une seule à déclarer dans Discord)
