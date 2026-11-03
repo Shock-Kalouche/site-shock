@@ -31,7 +31,8 @@
   const clientId = () => (SITE_DATA.settings.discordClientId || "").trim();
   const canLogin = () => /^https?:$/.test(location.protocol);
   // Adresse de retour : la page du site sans le #… (à déclarer telle quelle dans Discord)
-  const redirectUri = () => location.origin + location.pathname;
+  // (« …/index.html » et « …/ » sont ramenés à la même adresse : une seule à déclarer dans Discord)
+  const redirectUri = () => location.origin + location.pathname.replace(/index\.html$/, "");
 
   let session = store.get(STORE);
   if (session && session.expires < Date.now()) { store.del(STORE); session = null; }

@@ -2455,7 +2455,7 @@
       <h4>Connexion Discord</h4>
       <p class="ed-hint">Facultative pour les visiteurs. Colle ici l'« Application ID » de ton application Discord (Developer Portal → OAuth2). Laisse vide pour masquer le bouton « Connexion ».</p>
       <label>ID de l'application Discord<input data-setting="discordClientId" inputmode="numeric" placeholder="ex. 123456789012345678" value="${esc(s.discordClientId || "")}"></label>
-      <p class="ed-hint">Adresse de redirection à déclarer dans Discord : <strong>${esc(location.origin + location.pathname)}</strong></p>
+      <p class="ed-hint">Adresses de redirection à déclarer dans Discord (OAuth2 → Redirects) : <strong>https://shock-kalouche.github.io/site-shock/</strong> (site en ligne) et <strong>http://localhost:8080/</strong> (en local). Adresse de cette page : <strong>${esc(location.origin + location.pathname.replace(/index\.html$/, ""))}</strong></p>
       <p class="ed-hint">Les membres de ce serveur Discord qui ont ce rôle sont le CMDM 1010 Fox : étiquette rouge dans le menu de leur profil, accès complet à l'éditeur et à « Gestion des officiers ». Les autres officiers se désignent dans « Gestion → Gestion des officiers ».</p>
       <label>ID du serveur Discord<input data-setting="discordGuildId" inputmode="numeric" value="${esc(s.discordGuildId || "")}"></label>
       <label>ID du ou des rôles « CMDM 1010 Fox » (séparés par une virgule)<input data-setting="discordRoleId" placeholder="ex. 1313599623004160082, 744164481365573692" value="${esc(s.discordRoleId || "")}"></label>

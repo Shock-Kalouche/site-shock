@@ -59,18 +59,23 @@ et 744164481365573692, serveur 733070665569140769) voient une étiquette rouge �
 accès complet à l'éditeur et à « Gestion des officiers ».
 Rien n'est envoyé ailleurs que vers Discord pour la connexion.
 
+Site en ligne : https://shock-kalouche.github.io/site-shock/
+
 Mise en place (une seule fois) :
 1. Va sur https://discord.com/developers/applications → « New Application ».
-2. Onglet OAuth2 → Redirects → ajoute exactement : http://localhost:8080/
-   puis enregistre.
+2. Onglet OAuth2 → Redirects → ajoute ces DEUX adresses (avec le « / » final), puis enregistre :
+     https://shock-kalouche.github.io/site-shock/
+     http://localhost:8080/
 3. Copie l'« Application ID » (onglet General Information).
-4. Lance lancer-le-site.bat (Python doit être installé : python.org).
-5. Écris l'ID dans site-data.js, sur la ligne "discordClientId": "ton ID"
+4. Colle-le dans site-data.js, sur la ligne :  "discordClientId": "TON ID",
    (une fois connecté en gérant, tu peux aussi le changer dans l'éditeur : Réglages > Connexion Discord).
+5. Envoie site-data.js sur GitHub (voir « Mettre le site en ligne »). Sans cet ID, le bouton « Connexion »
+   n'apparaît PAS (ni en ligne, ni en local).
 6. Recharge la page : le bouton « Connexion » apparaît dans la barre du haut.
+En local, ouvre le site avec lancer-le-site.bat (Python requis : python.org).
 
-Limites : le bouton n'apparaît que si le site est ouvert via http://localhost:8080/
-(pas en double-cliquant sur index.html). Le contrôle du rôle est fait dans le
+Limites : le bouton n'apparaît que si le site est ouvert via une adresse web (le site en ligne, ou
+http://localhost:8080/), pas en double-cliquant sur index.html. Le contrôle du rôle est fait dans le
 navigateur : il sert à réserver le bouton aux gérants, ce n'est pas une sécurité
 absolue (le fichier site-data.js reste modifiable par quiconque a accès au dossier).
 
@@ -87,3 +92,11 @@ La page n'est ouverte qu'au rôle de gérant (connexion Discord obligatoire).
 Important : le site est un dossier sur l'ordinateur. Un officier ne peut enregistrer
 que s'il a ce dossier (même PC, ou dossier partagé). Les droits sont contrôlés dans
 le navigateur : ce n'est pas une sécurité absolue.
+
+Mettre le site en ligne (GitHub Pages)
+--------------------------------------
+Site : https://shock-kalouche.github.io/site-shock/
+- Les dossiers docs/ et pages/ (images) doivent être à la racine du dépôt, à côté de index.html.
+- L'éditeur n'est relié à aucun GitHub : « Enregistrer » écrit dans un dossier de l'ordinateur.
+  Pour publier, enregistre dans le dossier du dépôt cloné, puis Commit + Push (GitHub Desktop).
+- Après chaque changement, recharge avec Ctrl+F5 (GitHub met 1 à 2 minutes à se mettre à jour).
